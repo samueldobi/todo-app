@@ -1,0 +1,29 @@
+:root {
+    --bg: #78C1F3;
+    --plus: #6527BE;
+    --delete: #B70404;
+  }
+body{
+    background-color:#78C1F3;
+}
+.to-do{
+    background-color: #fff;
+    height: 400px;
+    border-radius: 10px;
+}
+.plus{
+    background-color: #6527BE;
+}
+.lists{
+    display: flex;
+    flex-direction: column;
+}
+.tasks{
+    background-color:#E1ECC8;
+    padding: 5px;
+    margin: 5px;
+    font-weight: bold;
+}
+.make{
+    color:red;
+}
