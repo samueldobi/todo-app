@@ -1,102 +1,69 @@
-// const addBtn = document.querySelector('.plus')
-// const addList = document.querySelector('.lists')
-// const inputForm = document.querySelector('input[name="task-input"]')
+// getting all required elements
+const inputBox = document.querySelector(".inputField input");
+const addBtn = document.querySelector(".inputField button");
+const todoList = document.querySelector(".todoList");
+const deleteAllBtn = document.querySelector(".footer button");
 
-// addBtn.addEventListener('click', ()=>{
-//     const newList=  document.createElement("div")
-//     newList.classList.add('tasks')
-//     const inputValue = inputForm.value
-//     const text = document.createTextNode(inputValue)
-//     newList.appendChild(text)
-//   if (inputValue === '') {
-//     alert("You must write something!");
-//   } else {
-//     addList.appendChild(newList);
-//   }
-//   inputForm.value = "";
-//   console.log
-// })
-
-// const addBtn = document.querySelector('.plus');
-// const addList = document.querySelector('.lists');
-// const inputForm = document.querySelector('input[name="task-input"]');
-
-// addBtn.addEventListener('click', () => {
-//   const inputValue = inputForm.value;
-
-//   if (inputValue === '') {
-//     alert("You must write something!");
-//   } else {
-//     const taskCount = addList.childElementCount;
-    
-//     if (taskCount < 5) {
-//       const newList = document.createElement("div");
-//       newList.classList.add('tasks');
-
-//       const deleteBtn = document.createElement("span");
-//       deleteBtn.classList.add('delete');
-//       deleteBtn.innerHTML = "&#10006;";
-//       deleteBtn.style.color ='red';
-
-//       const text = document.createTextNode(inputValue);
-
-//       newList.appendChild(text);
-//       newList.appendChild(deleteBtn);
-//       addList.appendChild(newList);
-//     } else {
-//       alert("You cannot add more than 5 tasks!");
-//     }
-//   }
-
-//   inputForm.value = "";
-// });
-
-// addList.addEventListener('click', (event) => {
-//   if (event.target.classList.contains('delete')) {
-//     const task = event.target.parentElement;
-//     addList.removeChild(task);
-//   }
-// });
-
-const addBtn = document.querySelector('.plus');
-const addList = document.querySelector('.lists');
-const inputForm = document.querySelector('input[name="task-input"]');
-
-addBtn.addEventListener('click', () => {
-  const inputValue = inputForm.value;
-
-  if (inputValue === '') {
-    alert("You must write something!");
-  } else {
-    const taskCount = addList.childElementCount;
-
-    if (taskCount < 5) {
-      const newList = document.createElement("div");
-      newList.classList.add('tasks');
-
-      const taskText = document.createElement("span");
-      taskText.textContent = inputValue;
-      taskText.classList.add('task-text');
-
-      const deleteBtn = document.createElement("span");
-      deleteBtn.innerHTML = "&#10006;";
-      deleteBtn.classList.add('delete', 'make');
-      deleteBtn.style.color = 'red';
-
-      newList.appendChild(taskText);
-      newList.appendChild(deleteBtn);
-      addList.appendChild(newList);
-    } else {
-      alert("You cannot add more than 5 tasks!");
-    }
+// onkeyup event
+inputBox.onkeyup = ()=>{
+  let userEnteredValue = inputBox.value; //getting user entered value
+  if(userEnteredValue.trim() != 0){ //if the user value isn't only spaces
+    addBtn.classList.add("active"); //active the add button
+  }else{
+    addBtn.classList.remove("active"); //unactive the add button
   }
+}
 
-  inputForm.value = "";
-});
+showTasks(); //calling showTask function
 
-addList.addEventListener('click', (event) => {
-  if (event.target.classList.contains('delete')) {
-    const task = event.target.parentElement;
-    addList.removeChild(task);
+addBtn.onclick = ()=>{ //when user click on plus icon button
+  let userEnteredValue = inputBox.value; //getting input field value
+  let getLocalStorageData = localStorage.getItem("New Todo"); //getting localstorage
+  if(getLocalStorageData == null){ //if localstorage has no data
+    listArray = []; //create a blank array
+  }else{
+    listArray = JSON.parse(getLocalStorageData);  //transforming json string into a js object
   }
-});
+  listArray.push(userEnteredValue); //pushing or adding new value in array
+  localStorage.setItem("New Todo", JSON.stringify(listArray)); //transforming js object into a json string
+  showTasks(); //calling showTask function
+  addBtn.classList.remove("active"); //unactive the add button once the task added
+}
+
+function showTasks(){
+  let getLocalStorageData = localStorage.getItem("New Todo");
+  if(getLocalStorageData == null){
+    listArray = [];
+  }else{
+    listArray = JSON.parse(getLocalStorageData); 
+  }
+  const pendingTasksNumb = document.querySelector(".pendingTasks");
+  pendingTasksNumb.textContent = listArray.length; //passing the array length in pendingtask
+  if(listArray.length > 0){ //if array length is greater than 0
+    deleteAllBtn.classList.add("active"); //active the delete button
+  }else{
+    deleteAllBtn.classList.remove("active"); //unactive the delete button
+  }
+  let newLiTag = "";
+  listArray.forEach((element, index) => {
+    newLiTag += `<li>${element}<span class="icon" onclick="deleteTask(${index})"><i class="fas fa-trash"></i></span></li>`;
+  });
+  todoList.innerHTML = newLiTag; //adding new li tag inside ul tag
+  inputBox.value = ""; //once task added leave the input field blank
+}
+
+// delete task function
+function deleteTask(index){
+  let getLocalStorageData = localStorage.getItem("New Todo");
+  listArray = JSON.parse(getLocalStorageData);
+  listArray.splice(index, 1); //delete or remove the li
+  localStorage.setItem("New Todo", JSON.stringify(listArray));
+  showTasks(); //call the showTasks function
+}
+
+// delete all tasks function
+deleteAllBtn.onclick = ()=>{
+  listArray = []; //empty the array
+  localStorage.setItem("New Todo", JSON.stringify(listArray)); //set the item in localstorage
+  showTasks(); //call the showTasks function
+}
